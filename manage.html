@@ -23,9 +23,9 @@
 <div class="container">
     <h1>接码数据管理后台</h1>
     
-    <h3>添加新记录</h3>
+    <h3>添加新记录（香港手机号）</h3>
     <input type="text" id="name" placeholder="姓名">
-    <input type="text" id="phone" placeholder="手机号（11位）" maxlength="11">
+    <input type="text" id="phone" placeholder="香港手机号（8位）" maxlength="8">
     <input type="text" id="uid" placeholder="ID（可留空）">
     <input type="text" id="link" placeholder="专属接码链接">
     <button onclick="addRecord()">添加这条记录</button>
@@ -47,7 +47,9 @@
     <div style="margin-top:40px;">
         <button onclick="exportData()" style="background:#0066cc;font-size:17px;padding:14px;">生成 data.json 内容（点击复制）</button>
         <textarea id="jsonOutput" readonly placeholder="点击上方按钮生成正确的 JSON 格式"></textarea>
-        <p style="text-align:center;color:#666;margin-top:10px;">复制上面的内容 → 打开 data.json → 全选粘贴 → 提交更新</p>
+        <p style="text-align:center;color:#666;margin-top:10px;">
+            复制上面的内容 → 打开 data.json → 全选粘贴覆盖 → 提交更新
+        </p>
     </div>
 </div>
 
@@ -87,8 +89,8 @@ function addRecord() {
     const uid = document.getElementById('uid').value.trim();
     const link = document.getElementById('link').value.trim();
 
-    if (!name || !phone || phone.length !== 11 || !link) {
-        alert('姓名、手机号（必须11位）、链接不能为空！');
+    if (!name || !phone || phone.length !== 8 || !link) {
+        alert('姓名、手机号（必须8位香港号）、链接不能为空！');
         return;
     }
     if (dataList.some(item => item.phone === phone)) {
@@ -105,7 +107,7 @@ function addRecord() {
     document.getElementById('uid').value = '';
     document.getElementById('link').value = '';
     
-    alert('添加成功！\n请继续添加其他记录，或点击下方按钮生成 JSON');
+    alert('添加成功！\n请继续添加或点击下方按钮生成 JSON');
 }
 
 function deleteRecord(index) {
@@ -132,13 +134,12 @@ function exportData() {
     const textarea = document.getElementById('jsonOutput');
     textarea.value = jsonStr;
     
-    // 自动复制
     navigator.clipboard.writeText(jsonStr).then(() => {
-        alert('✅ 已复制到剪贴板！\n\n请按以下操作更新 data.json：\n1. 打开 data.json 文件\n2. 全选删除原有内容\n3. 粘贴刚才复制的内容\n4. 点击 Commit changes 保存');
+        alert('✅ 已复制到剪贴板！\n\n请更新 data.json：\n1. 打开 data.json 文件\n2. 全选删除旧内容\n3. 粘贴新内容\n4. 点击 Commit changes 保存');
     });
 }
 
-// 初始化加载
+// 初始化
 loadData();
 </script>
 </body>
