@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>查询专属链接</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:微软雅黑;}
+        body{background:#f5f5f5;padding:20px;display:flex;justify-content:center;}
+        .container{max-width:420px;width:100%;background:white;border-radius:16px;padding:30px 25px;box-shadow:0 4px 20px rgba(0,0,0,0.08);}
+        h1{text-align:center;color:#333;margin-bottom:30px;font-size:24px;}
+        input{width:100%;padding:15px;margin:10px 0;border:1px solid #ddd;border-radius:10px;font-size:17px;}
+        button{width:100%;padding:15px;background:#07c160;color:white;border:none;border-radius:10px;font-size:18px;cursor:pointer;margin-top:10px;}
+        .result{margin-top:25px;padding:20px;background:#f8f9fa;border-radius:10px;display:none;border:1px solid #eee;}
+        .result p{margin:12px 0;}
+        .link{color:#0066cc;word-break:break-all;font-size:16px;margin-top:8px;}
+        .copy-btn{background:#0066cc;margin-top:15px;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>查询专属链接</h1>
+        
+        <input type="text" id="phone" placeholder="请输入香港手机号（8位）" maxlength="8">
+        <button onclick="searchLink()">立即查询</button>
+        
+        <div class="result" id="result">
+            <p><strong>姓名：</strong><span id="rName"></span></p>
+            <p><strong>ID：</strong><span id="rId"></span></p>
+            <p><strong>专属链接：</strong></p>
+            <div class="link" id="rLink"></div>
+            <button class="copy-btn" onclick="copyLink()">复制链接</button>
+            <p style="font-size:14px;color:#666;margin-top:20px;text-align:center;">
+                微信内可能无法直接打开<br>请复制链接后在浏览器中打开
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let dataList = [];
+
+        async function loadData() {
+            try {
+                const res = await fetch('data.json?t=' + Date.now());
+                dataList = await res.json();
+            } catch(e) {
+                alert('数据加载失败，请稍后重试');
+            }
+        }
+
+        function searchLink() {
+            const phone = document.getElementById('phone').value.trim();
+            
+            if (!phone || phone.length !== 8) {
+                alert('请输入正确的8位香港手机号');
+                return;
+            }
+
+            const result = dataList.find(item => item.phone === phone);
+            
+            const resultDiv = document.getElementById('result');
+            
+            if (result) {
+                document.getElementById('rName').innerText = result.name || '无';
+                document.getElementById('rId').innerText = result.id || '无';
+                document.getElementById('rLink').innerText = result.link;
+                resultDiv.style.display = 'block';
+            } else {
+                alert('未找到该手机号对应的链接');
+                resultDiv.style.display = 'none';
+            }
+        }
+
+        function copyLink() {
+            const linkText = document.getElementById('rLink').innerText;
+            if (linkText) {
+                navigator.clipboard.writeText(linkText).then(() => {
+                    alert('链接已复制！\n请在浏览器中粘贴打开');
+                });
+            }
+        }
+
+        // 按回车查询
+        document.getElementById('phone').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') searchLink();
+        });
+
+        loadData();
+    </script>
+</body>
+</html>
